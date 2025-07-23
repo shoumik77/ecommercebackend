@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:14
+    container_name: postgres
+    environment:
+      POSTGRES_USER: ecommerce
+      POSTGRES_PASSWORD: ecommerce
+      POSTGRES_DB: ecommerce_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - ecommerce-net
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - ecommerce-net
+  
+  auth-service:
+    build:
+      context: ./auth-service
+    ports:
+      - "8000:8000"
+    depends_on:
+      - "postgres"
+    env_file:
+      - ./auth-service/.env
+    networks:
+      - ecommerce-net
+
+  # Services will go here, e.g., auth-service, product-service
+
+volumes:
+  pgdata:
+
+networks:
+  ecommerce-net:
+    driver: bridge
+
+
+
