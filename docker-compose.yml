@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   postgres:
-    image: postgres:14
+    image: postgres:14-alpine
     container_name: postgres
     environment:
       POSTGRES_USER: ecommerce
@@ -14,9 +14,14 @@ services:
       - pgdata:/var/lib/postgresql/data
     networks:
       - ecommerce-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U youruser"]
+      interval: 5s
+      retries: 5
+      start_period: 5s
 
   redis:
-    image: redis:alpine
+    image: redis:7.2.4-alpine
     container_name: redis
     ports:
       - "6379:6379"
